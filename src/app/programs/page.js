@@ -12,29 +12,41 @@ import ItemListWithModal from "@/components/ItemListWithModal";
 import { getUserId } from "@/utils/auth";
 import { usePrograms } from "@/hooks/usePrograms";
 import { useExercises } from "@/hooks/useExercises";
+import { useRouter } from "next/navigation";
 
 export default function ProgramsPage() {
   const [userId, setUserId] = useState(null);
+  const router = useRouter();
 
-  useEffect(() => {
-    setUserId(getUserId());
-  }, []);
-
-  const { programs, loading, error, refetch, addProgram, deleteProgram } =
-    usePrograms(userId);
+  const {
+    programs,
+    loading: loadingPrograms,
+    error: errorPrograms,
+    refetch,
+    addProgram,
+    deleteProgram,
+  } = usePrograms(userId);
 
   const {
     exercises,
-    loading: loadingEx,
-    error: errorEx,
+    loading: loadingExercises,
+    error: errorExercises,
   } = useExercises(userId);
+
+  useEffect(() => {
+    if (!userId) {
+      router.replace("/auth/login");
+    }
+  }, [userId]);
 
   if (userId === null) return <CircularProgress />;
   if (!userId)
     return <Typography>Connecte-toi pour voir tes programmes.</Typography>;
-  if (loading || loadingEx) return <CircularProgress />;
-  if (error) return <Typography color="error">{error.message}</Typography>;
-  if (errorEx) return <Typography color="error">{errorEx.message}</Typography>;
+  if (loadingPrograms || loadingExercises) return <CircularProgress />;
+  if (errorPrograms)
+    return <Typography color="error">{errorPrograms.message}</Typography>;
+  if (errorExercises)
+    return <Typography color="error">{errorExercises.message}</Typography>;
 
   const handleAddProgram = async (values) => {
     await addProgram({
@@ -83,8 +95,14 @@ export default function ProgramsPage() {
               <Typography variant="body2" color="text.secondary">
                 {program.description}
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                Exercices :
+              <div style={{ marginBottom: 8 }}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mb: 1 }}
+                >
+                  Exercices :
+                </Typography>
                 {program.exercises && program.exercises.length > 0 ? (
                   <ul style={{ margin: 0, paddingLeft: 16 }}>
                     {program.exercises.map((ex, i) => {
@@ -108,9 +126,12 @@ export default function ProgramsPage() {
                     })}
                   </ul>
                 ) : (
-                  " Aucun"
+                  <Typography variant="body2" color="text.secondary">
+                    Aucun
+                  </Typography>
                 )}
-              </Typography>
+              </div>
+
               <Button
                 variant="outlined"
                 color="error"

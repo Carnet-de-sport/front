@@ -25,6 +25,14 @@ const REGISTER_MUTATION = gql`
   }
 `;
 
+const LOGIN_MUTATION = gql`
+  mutation Login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+      token
+    }
+  }
+`;
+
 export default function RegisterForm() {
   const [inputs, setInputs] = useState({
     username: "",
@@ -32,6 +40,7 @@ export default function RegisterForm() {
     password: "",
   });
   const [register, { loading }] = useMutation(REGISTER_MUTATION);
+  const [login] = useMutation(LOGIN_MUTATION);
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -43,10 +52,19 @@ export default function RegisterForm() {
     try {
       const result = await register({ variables: inputs });
       if (result.data?.register?.id) {
-        toast.success("Inscription réussie !");
-        setTimeout(() => {
-          router.push("/");
-        }, 1200);
+        toast.success("Inscription réussie, connexion en cours...");
+        // Login automatique
+        const loginRes = await login({
+          variables: { username: inputs.username, password: inputs.password },
+        });
+        if (loginRes.data?.login?.token) {
+          localStorage.setItem("token", loginRes.data.login.token);
+          setTimeout(() => {
+            router.push("/exercises");
+          }, 800);
+        } else {
+          toast.error("Création ok mais connexion impossible !");
+        }
       } else {
         toast.error("Une erreur est survenue. Vérifie tes infos.");
       }

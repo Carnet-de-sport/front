@@ -11,13 +11,11 @@ import {
 import ItemListWithModal from "@/components/ItemListWithModal";
 import { useExercises } from "@/hooks/useExercises";
 import { getUserId } from "@/utils/auth";
+import { useRouter } from "next/navigation";
 
 export default function ExercisesPage() {
   const [userId, setUserId] = useState(null);
-
-  useEffect(() => {
-    setUserId(getUserId());
-  }, []);
+  const router = useRouter();
 
   const {
     exercises,
@@ -29,6 +27,19 @@ export default function ExercisesPage() {
     exerciseTypes,
     muscleGroups,
   } = useExercises(userId);
+
+  useEffect(() => {
+    if (!userId) {
+      router.replace("/auth/login");
+    }
+    if (
+      error &&
+      error.message &&
+      error.message.toLowerCase().includes("non autorisé")
+    ) {
+      router.replace("/auth/login");
+    }
+  }, [userId, error]);
 
   if (userId === null) return <CircularProgress />;
   if (!userId)
