@@ -29,23 +29,19 @@ export default function ExercisesPage() {
   } = useExercises(userId);
 
   useEffect(() => {
-    if (!userId) {
+    setUserId(getUserId());
+  }, []);
+
+  useEffect(() => {
+    // Ne redirige QUE si c'est vraiment "" ou false
+    if (userId === "" || userId === false) {
       router.replace("/auth/login");
     }
-    if (
-      error &&
-      error.message &&
-      error.message.toLowerCase().includes("non autorisé")
-    ) {
-      router.replace("/auth/login");
-    }
-  }, [userId, error]);
+  }, [userId, router]);
 
   if (userId === null) return <CircularProgress />;
   if (!userId)
-    return <Typography>Connecte-toi pour voir tes exercices.</Typography>;
-  if (loading) return <CircularProgress />;
-  if (error) return <Typography color="error">{error.message}</Typography>;
+    return <Typography>Connecte-toi pour voir tes programmes.</Typography>;
 
   const handleAddExercise = async (values) => {
     await addExercise({

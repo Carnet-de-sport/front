@@ -15,7 +15,7 @@ import { useExercises } from "@/hooks/useExercises";
 import { useRouter } from "next/navigation";
 
 export default function ProgramsPage() {
-  const [userId, setUserId] = useState(null);
+  const [userId, setUserId] = useState(undefined);
   const router = useRouter();
 
   const {
@@ -34,19 +34,19 @@ export default function ProgramsPage() {
   } = useExercises(userId);
 
   useEffect(() => {
-    if (!userId) {
+    setUserId(getUserId());
+  }, []);
+
+  useEffect(() => {
+    // Ne redirige QUE si c'est vraiment "" ou false
+    if (userId === "" || userId === false) {
       router.replace("/auth/login");
     }
-  }, [userId]);
+  }, [userId, router]);
 
   if (userId === null) return <CircularProgress />;
   if (!userId)
     return <Typography>Connecte-toi pour voir tes programmes.</Typography>;
-  if (loadingPrograms || loadingExercises) return <CircularProgress />;
-  if (errorPrograms)
-    return <Typography color="error">{errorPrograms.message}</Typography>;
-  if (errorExercises)
-    return <Typography color="error">{errorExercises.message}</Typography>;
 
   const handleAddProgram = async (values) => {
     await addProgram({
