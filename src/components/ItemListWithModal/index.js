@@ -96,8 +96,13 @@ export default function ItemListWithModal({
                 }}
                 value={formState[field.name] || (field.multiple ? [] : "")}
               >
-                {field.options.map((option) => (
-                  <MenuItem key={option} value={option}>
+                {field.options.map((option, idx) => (
+                  <MenuItem
+                    key={field.optionValues ? field.optionValues[idx] : option}
+                    value={
+                      field.optionValues ? field.optionValues[idx] : option
+                    }
+                  >
                     {option}
                   </MenuItem>
                 ))}
