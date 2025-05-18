@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useMutation, gql } from "@apollo/client";
+import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 import {
   Container,
   Typography,
@@ -29,7 +31,8 @@ export default function RegisterForm() {
     email: "",
     password: "",
   });
-  const [register, { loading, error, data }] = useMutation(REGISTER_MUTATION);
+  const [register, { loading }] = useMutation(REGISTER_MUTATION);
+  const router = useRouter();
 
   const handleChange = (e) => {
     setInputs({ ...inputs, [e.target.name]: e.target.value });
@@ -37,7 +40,19 @@ export default function RegisterForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await register({ variables: inputs });
+    try {
+      const result = await register({ variables: inputs });
+      if (result.data?.register?.id) {
+        toast.success("Inscription réussie !");
+        setTimeout(() => {
+          router.push("/");
+        }, 1200);
+      } else {
+        toast.error("Une erreur est survenue. Vérifie tes infos.");
+      }
+    } catch (err) {
+      toast.error("Erreur : " + (err?.message || "Une erreur inconnue"));
+    }
   };
 
   return (
@@ -93,16 +108,6 @@ export default function RegisterForm() {
             >
               S'inscrire
             </Button>
-            {error && (
-              <Typography color="error" variant="body2">
-                {error.message}
-              </Typography>
-            )}
-            {data && (
-              <Typography color="primary" variant="body2">
-                Inscription réussie !
-              </Typography>
-            )}
           </Box>
           <Box mt={2} textAlign="center">
             <MuiLink component={Link} href="/auth/login" color="secondary">

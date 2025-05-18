@@ -2,6 +2,7 @@
 import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import Navbar from "../components/Navbar";
+import { Toaster } from "react-hot-toast";
 
 const client = new ApolloClient({
   uri: "http://localhost:4000/graphql",
@@ -66,6 +67,18 @@ export default function RootLayout({ children }) {
           <ThemeProvider theme={theme}>
             <CssBaseline />
             <Navbar />
+            <Toaster
+              position="bottom-right"
+              reverseOrder={false}
+              toastOptions={{
+                style: {
+                  background: "#232733", // adapte pour le dark
+                  color: "#fff",
+                  borderRadius: "12px",
+                  fontSize: "1.05rem",
+                },
+              }}
+            />
             {children}
           </ThemeProvider>
         </ApolloProvider>
