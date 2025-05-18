@@ -40,6 +40,13 @@ export default function Navbar() {
           <Button color="inherit" component={Link} href="/">
             Accueil
           </Button>
+          <Button color="inherit" component={Link} href="/programs">
+            Programmes
+          </Button>
+          <Button color="inherit" component={Link} href="/exercises">
+            Exercices
+          </Button>
+
           {!isAuth ? (
             <Button color="inherit" component={Link} href="/auth/login">
               Login
