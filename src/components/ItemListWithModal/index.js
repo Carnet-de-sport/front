@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  MenuItem,
 } from "@mui/material";
 
 export default function ItemListWithModal({
@@ -19,6 +20,7 @@ export default function ItemListWithModal({
   addLabel,
   onAdd,
   renderItem,
+  fields = [],
 }) {
   const [open, setOpen] = useState(false);
   const [formState, setFormState] = useState({});
@@ -30,7 +32,16 @@ export default function ItemListWithModal({
   };
 
   const handleChange = (e) => {
-    setFormState({ ...formState, [e.target.name]: e.target.value });
+    const { name, value, multiple, options } = e.target;
+    // Gère les selects multiples (muscles)
+    if (multiple) {
+      const values = Array.from(options)
+        .filter((option) => option.selected)
+        .map((option) => option.value);
+      setFormState({ ...formState, [name]: values });
+    } else {
+      setFormState({ ...formState, [name]: value });
+    }
   };
 
   const handleSubmit = () => {
@@ -69,22 +80,42 @@ export default function ItemListWithModal({
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>{addLabel}</DialogTitle>
         <DialogContent>
-          <TextField
-            margin="dense"
-            name="name"
-            label="Nom"
-            fullWidth
-            variant="standard"
-            onChange={handleChange}
-          />
-          <TextField
-            margin="dense"
-            name="description"
-            label="Description"
-            fullWidth
-            variant="standard"
-            onChange={handleChange}
-          />
+          {fields.map((field) =>
+            field.type === "select" ? (
+              <TextField
+                key={field.name}
+                margin="dense"
+                select
+                name={field.name}
+                label={field.label}
+                fullWidth
+                variant="standard"
+                onChange={handleChange}
+                SelectProps={{
+                  multiple: field.multiple || false,
+                }}
+                value={formState[field.name] || (field.multiple ? [] : "")}
+              >
+                {field.options.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </TextField>
+            ) : (
+              <TextField
+                key={field.name}
+                margin="dense"
+                name={field.name}
+                label={field.label}
+                type={field.type || "text"}
+                fullWidth
+                variant="standard"
+                onChange={handleChange}
+                value={formState[field.name] || ""}
+              />
+            )
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Annuler</Button>

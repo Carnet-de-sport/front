@@ -50,23 +50,25 @@ export default function ProgramsPage() {
   };
 
   return (
-    <Container sx={{ mt: 5 }}>
-      <ItemListWithModal
-        items={data?.myPrograms || []}
-        title="Mes Programmes"
-        addLabel="Ajouter un programme"
-        onAdd={handleAddProgram}
-        renderItem={(program) => (
-          <Card>
-            <CardContent>
-              <Typography variant="h6">{program.name}</Typography>
-              <Typography variant="body2" color="text.secondary">
-                {program.description}
-              </Typography>
-            </CardContent>
-          </Card>
-        )}
-      />
-    </Container>
+    <ItemListWithModal
+      items={data?.myPrograms || []}
+      title="Mes Programmes"
+      addLabel="Ajouter un programme"
+      onAdd={handleAddProgram}
+      fields={[
+        { name: "name", label: "Nom" },
+        { name: "description", label: "Description" },
+      ]}
+      renderItem={(program) => (
+        <Card>
+          <CardContent>
+            <Typography variant="h6">{program.name}</Typography>
+            <Typography variant="body2" color="text.secondary">
+              {program.description}
+            </Typography>
+          </CardContent>
+        </Card>
+      )}
+    />
   );
 }
