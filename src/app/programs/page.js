@@ -1,66 +1,17 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useQuery, useMutation, gql } from "@apollo/client";
 import {
   Card,
   CardContent,
   Typography,
   CircularProgress,
   Container,
+  Button,
 } from "@mui/material";
 import ItemListWithModal from "@/components/ItemListWithModal";
 import { getUserId } from "@/utils/auth";
-
-const GET_PROGRAMS = gql`
-  query GetPrograms($userId: ID!) {
-    myPrograms(userId: $userId) {
-      id
-      name
-      description
-      exercises {
-        exerciseId
-        reps
-        sets
-        weight
-      }
-    }
-  }
-`;
-
-const GET_EXERCISES = gql`
-  query GetExercises($userId: ID!) {
-    myExercises(userId: $userId) {
-      id
-      name
-    }
-  }
-`;
-
-const ADD_PROGRAM = gql`
-  mutation AddProgram(
-    $userId: ID!
-    $name: String!
-    $description: String
-    $exercises: [ProgramExerciseInput]
-  ) {
-    addProgram(
-      userId: $userId
-      name: $name
-      description: $description
-      exercises: $exercises
-    ) {
-      id
-      name
-      description
-      exercises {
-        exerciseId
-        reps
-        sets
-        weight
-      }
-    }
-  }
-`;
+import { usePrograms } from "@/hooks/usePrograms";
+import { useExercises } from "@/hooks/useExercises";
 
 export default function ProgramsPage() {
   const [userId, setUserId] = useState(null);
@@ -69,23 +20,14 @@ export default function ProgramsPage() {
     setUserId(getUserId());
   }, []);
 
-  // Query pour les programmes
-  const { data, loading, error, refetch } = useQuery(GET_PROGRAMS, {
-    skip: !userId,
-    variables: { userId },
-  });
+  const { programs, loading, error, refetch, addProgram, deleteProgram } =
+    usePrograms(userId);
 
-  // Query pour les exercices disponibles
   const {
-    data: exercisesData,
+    exercises,
     loading: loadingEx,
     error: errorEx,
-  } = useQuery(GET_EXERCISES, {
-    skip: !userId,
-    variables: { userId },
-  });
-
-  const [addProgram] = useMutation(ADD_PROGRAM);
+  } = useExercises(userId);
 
   if (userId === null) return <CircularProgress />;
   if (!userId)
@@ -93,12 +35,6 @@ export default function ProgramsPage() {
   if (loading || loadingEx) return <CircularProgress />;
   if (error) return <Typography color="error">{error.message}</Typography>;
   if (errorEx) return <Typography color="error">{errorEx.message}</Typography>;
-
-  const exerciseOptions =
-    exercisesData?.myExercises?.map((ex) => ({
-      value: ex.id,
-      label: ex.name,
-    })) || [];
 
   const handleAddProgram = async (values) => {
     const exercises = (values.exercises || []).map((id) => ({
@@ -118,13 +54,23 @@ export default function ProgramsPage() {
     refetch();
   };
 
+  const handleDeleteProgram = async (id) => {
+    await deleteProgram({ variables: { id, userId } });
+    refetch();
+  };
+
+  const exerciseOptions = Array.isArray(exercises)
+    ? exercises.map((ex) => ({ value: ex.id, label: ex.name }))
+    : [];
+
   return (
     <Container sx={{ mt: 5 }}>
       <ItemListWithModal
-        items={data?.myPrograms || []}
+        items={programs}
         title="Mes Programmes"
         addLabel="Ajouter un programme"
         onAdd={handleAddProgram}
+        onDelete={handleDeleteProgram}
         fields={[
           { name: "name", label: "Nom" },
           { name: "description", label: "Description" },
@@ -132,8 +78,7 @@ export default function ProgramsPage() {
             name: "exercises",
             label: "Exercices inclus",
             type: "select",
-            options: exerciseOptions.map((opt) => opt.label),
-            optionValues: exerciseOptions.map((opt) => opt.value),
+            options: exerciseOptions,
             multiple: true,
           },
         ]}
@@ -157,6 +102,15 @@ export default function ProgramsPage() {
                     ))
                   : " Aucun"}
               </Typography>
+              <Button
+                variant="outlined"
+                color="error"
+                size="small"
+                sx={{ mt: 1 }}
+                onClick={() => handleDeleteProgram(program.id)}
+              >
+                Supprimer
+              </Button>
             </CardContent>
           </Card>
         )}
