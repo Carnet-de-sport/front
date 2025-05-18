@@ -37,18 +37,12 @@ export default function ProgramsPage() {
   if (errorEx) return <Typography color="error">{errorEx.message}</Typography>;
 
   const handleAddProgram = async (values) => {
-    const exercises = (values.exercises || []).map((id) => ({
-      exerciseId: id,
-      reps: null,
-      sets: null,
-      weight: null,
-    }));
     await addProgram({
       variables: {
         userId,
         name: values.name,
         description: values.description,
-        exercises,
+        exercises: values.exercises,
       },
     });
     refetch();
@@ -89,18 +83,33 @@ export default function ProgramsPage() {
               <Typography variant="body2" color="text.secondary">
                 {program.description}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                 Exercices :
-                {program.exercises && program.exercises.length > 0
-                  ? program.exercises.map((ex, i) => (
-                      <span key={i}>
-                        {exerciseOptions.find(
-                          (opt) => opt.value === ex.exerciseId
-                        )?.label || ex.exerciseId}
-                        {i < program.exercises.length - 1 ? ", " : ""}
-                      </span>
-                    ))
-                  : " Aucun"}
+                {program.exercises && program.exercises.length > 0 ? (
+                  <ul style={{ margin: 0, paddingLeft: 16 }}>
+                    {program.exercises.map((ex, i) => {
+                      const exo = exerciseOptions.find(
+                        (opt) => opt.value === ex.exerciseId
+                      );
+                      return (
+                        <li key={i} style={{ marginBottom: 4 }}>
+                          <b>{exo?.label || ex.exerciseId}</b>
+                          {typeof ex.sets !== "undefined" && (
+                            <>
+                              {" — "}
+                              <span>
+                                Séries : {ex.sets ?? "-"}, Reps :{" "}
+                                {ex.reps ?? "-"}, Poids : {ex.weight ?? "-"}
+                              </span>
+                            </>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : (
+                  " Aucun"
+                )}
               </Typography>
               <Button
                 variant="outlined"

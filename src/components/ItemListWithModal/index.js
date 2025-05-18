@@ -33,7 +33,6 @@ export default function ItemListWithModal({
 
   const handleChange = (e) => {
     const { name, value, multiple, options } = e.target;
-    // Gère les selects multiples (muscles)
     if (multiple) {
       const values = Array.from(options)
         .filter((option) => option.selected)
@@ -44,8 +43,30 @@ export default function ItemListWithModal({
     }
   };
 
+  // Ajoute cette fonction !
+  const handleExtraFieldChange = (exId, field, value) => {
+    setFormState((prev) => ({
+      ...prev,
+      [`${field}_${exId}`]: value,
+    }));
+  };
+
   const handleSubmit = () => {
-    onAdd(formState);
+    if (
+      fields.some(
+        (f) => f.name === "exercises" && f.type === "select" && f.multiple
+      )
+    ) {
+      const exercisesArr = (formState.exercises || []).map((exId) => ({
+        exerciseId: exId,
+        sets: Number(formState[`sets_${exId}`]) || null,
+        reps: Number(formState[`reps_${exId}`]) || null,
+        weight: Number(formState[`weight_${exId}`]) || null,
+      }));
+      onAdd({ ...formState, exercises: exercisesArr });
+    } else {
+      onAdd(formState);
+    }
     handleClose();
   };
 
@@ -81,7 +102,82 @@ export default function ItemListWithModal({
         <DialogTitle>{addLabel}</DialogTitle>
         <DialogContent>
           {fields.map((field) =>
-            field.type === "select" ? (
+            // Cas particulier : création de programme avec exercises multiples
+            field.type === "select" &&
+            field.multiple &&
+            field.name === "exercises" ? (
+              <div key={field.name}>
+                <TextField
+                  margin="dense"
+                  select
+                  name={field.name}
+                  label={field.label}
+                  fullWidth
+                  variant="standard"
+                  onChange={handleChange}
+                  SelectProps={{
+                    multiple: true,
+                  }}
+                  value={formState[field.name] || []}
+                >
+                  {field.options.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                {/* Ajout champs sets/reps/weight pour chaque exo sélectionné */}
+                {(formState[field.name] || []).map((exId) => (
+                  <div
+                    key={exId}
+                    style={{
+                      display: "flex",
+                      gap: 8,
+                      alignItems: "center",
+                      marginTop: 8,
+                    }}
+                  >
+                    <Typography variant="body2" sx={{ minWidth: 100 }}>
+                      {field.options.find((o) => o.value === exId)?.label ||
+                        exId}
+                    </Typography>
+                    <TextField
+                      label="Séries"
+                      type="number"
+                      size="small"
+                      variant="standard"
+                      style={{ width: 70 }}
+                      value={formState[`sets_${exId}`] || ""}
+                      onChange={(e) =>
+                        handleExtraFieldChange(exId, "sets", e.target.value)
+                      }
+                    />
+                    <TextField
+                      label="Reps"
+                      type="number"
+                      size="small"
+                      variant="standard"
+                      style={{ width: 70 }}
+                      value={formState[`reps_${exId}`] || ""}
+                      onChange={(e) =>
+                        handleExtraFieldChange(exId, "reps", e.target.value)
+                      }
+                    />
+                    <TextField
+                      label="Poids"
+                      type="number"
+                      size="small"
+                      variant="standard"
+                      style={{ width: 70 }}
+                      value={formState[`weight_${exId}`] || ""}
+                      onChange={(e) =>
+                        handleExtraFieldChange(exId, "weight", e.target.value)
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : field.type === "select" ? (
               <TextField
                 key={field.name}
                 margin="dense"
