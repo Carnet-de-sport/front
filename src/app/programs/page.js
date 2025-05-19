@@ -30,7 +30,7 @@ export default function ProgramsPage() {
     refetch,
     addProgram,
     deleteProgram,
-  } = usePrograms(userId);
+  } = usePrograms();
 
   const {
     exercises,

@@ -5,7 +5,7 @@ export function useShareItem(type = "program") {
       mutation ShareItem($id: ID!, $usernameToShare: String!) {
         ${type === "program" ? "shareProgram" : "shareExercise"}(
           ${type === "program" ? "programId" : "exerciseId"}: $id,
-          usernameToShare: $$usernameToShare
+          usernameToShare: $usernameToShare
         ) {
           id
           sharedWith

@@ -8,6 +8,7 @@ import {
   Container,
   Grid,
 } from "@mui/material";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -36,14 +37,16 @@ export default function Home() {
                   Visualisez vos progrès et adaptez vos programmes en toute
                   simplicité.
                 </Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{ mt: 3, borderRadius: 3 }}
-                  fullWidth
-                >
-                  Voir mes programmes
-                </Button>
+                <Link href="/programs" passHref legacyBehavior>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{ mt: 3, borderRadius: 3 }}
+                    fullWidth
+                  >
+                    Voir mes programmes
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </Grid>
@@ -56,14 +59,16 @@ export default function Home() {
                 <Typography sx={{ mt: 2 }}>
                   Créez et partagez vos exercices avec un look dark élégant.
                 </Typography>
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  sx={{ mt: 3, borderRadius: 3 }}
-                  fullWidth
-                >
-                  Créer un exercice
-                </Button>
+                <Link href="/exercises" passHref legacyBehavior>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    sx={{ mt: 3, borderRadius: 3 }}
+                    fullWidth
+                  >
+                    Créer un exercice
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </Grid>
