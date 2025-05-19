@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useMutation, gql } from "@apollo/client";
+import { useMutation, gql, useApolloClient } from "@apollo/client";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import {
@@ -27,6 +27,7 @@ export default function LoginForm() {
   const [inputs, setInputs] = useState({ username: "", password: "" });
   const [login, { loading, error, data }] = useMutation(LOGIN_MUTATION);
   const router = useRouter();
+  const client = useApolloClient();
 
   const handleChange = (e) => {
     setInputs({ ...inputs, [e.target.name]: e.target.value });
@@ -38,9 +39,10 @@ export default function LoginForm() {
     const token = result.data?.login?.token;
     if (token) {
       localStorage.setItem("token", token);
+      await client.resetStore();
       window.dispatchEvent(new Event("authChange"));
       toast.success("Connecté");
-      router.push("/"); // "/programs"
+      router.push("/");
     } else {
       toast.error("Erreur de connexion");
     }
