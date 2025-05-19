@@ -1,8 +1,8 @@
 import { useQuery, useMutation, gql } from "@apollo/client";
 
 const GET_EXERCISES = gql`
-  query GetExercises($userId: ID!) {
-    myExercises(userId: $userId) {
+  query GetExercises {
+    myExercises {
       id
       name
       description
@@ -14,14 +14,12 @@ const GET_EXERCISES = gql`
 
 const ADD_EXERCISE = gql`
   mutation AddExercise(
-    $userId: ID!
     $name: String!
     $description: String
     $muscles: [String]
     $type: String
   ) {
     addExercise(
-      userId: $userId
       name: $name
       description: $description
       muscles: $muscles
@@ -37,8 +35,8 @@ const ADD_EXERCISE = gql`
 `;
 
 const DELETE_EXERCISE = gql`
-  mutation DeleteExercise($id: ID!, $userId: ID!) {
-    deleteExercise(id: $id, userId: $userId) {
+  mutation DeleteExercise($id: ID!) {
+    deleteExercise(id: $id) {
       id
     }
   }

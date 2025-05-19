@@ -47,14 +47,13 @@ export default function ExercisesPage() {
     await addExercise({
       variables: {
         ...values,
-        userId,
       },
     });
     refetch();
   };
 
   const handleDeleteExercise = async (id) => {
-    await deleteExercise({ variables: { id, userId } });
+    await deleteExercise({ variables: { id } });
     refetch();
   };
 

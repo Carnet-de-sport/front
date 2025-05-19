@@ -1,8 +1,6 @@
 "use client";
 import { useState } from "react";
 import {
-  Card,
-  CardContent,
   Typography,
   Grid,
   Button,
@@ -43,7 +41,6 @@ export default function ItemListWithModal({
     }
   };
 
-  // Ajoute cette fonction !
   const handleExtraFieldChange = (exId, field, value) => {
     setFormState((prev) => ({
       ...prev,
@@ -102,7 +99,6 @@ export default function ItemListWithModal({
         <DialogTitle>{addLabel}</DialogTitle>
         <DialogContent>
           {fields.map((field) =>
-            // Cas particulier : création de programme avec exercises multiples
             field.type === "select" &&
             field.multiple &&
             field.name === "exercises" ? (
@@ -126,7 +122,6 @@ export default function ItemListWithModal({
                     </MenuItem>
                   ))}
                 </TextField>
-                {/* Ajout champs sets/reps/weight pour chaque exo sélectionné */}
                 {(formState[field.name] || []).map((exId) => (
                   <div
                     key={exId}

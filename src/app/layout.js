@@ -1,11 +1,35 @@
 "use client";
-import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
+import {
+  ApolloProvider,
+  ApolloClient,
+  InMemoryCache,
+  createHttpLink,
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import Navbar from "../components/Navbar";
 import { Toaster } from "react-hot-toast";
 
-const client = new ApolloClient({
+// 1️⃣ Crée le lien HTTP GraphQL
+const httpLink = createHttpLink({
   uri: "http://localhost:4000/graphql",
+});
+
+// 2️⃣ Ajoute le middleware qui récupère le token à chaque requête
+const authLink = setContext((_, { headers }) => {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  return {
+    headers: {
+      ...headers,
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  };
+});
+
+// 3️⃣ Crée le client Apollo avec le lien sécurisé
+const client = new ApolloClient({
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
 

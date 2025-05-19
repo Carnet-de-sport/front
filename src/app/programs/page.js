@@ -51,7 +51,6 @@ export default function ProgramsPage() {
   const handleAddProgram = async (values) => {
     await addProgram({
       variables: {
-        userId,
         name: values.name,
         description: values.description,
         exercises: values.exercises,
@@ -61,7 +60,7 @@ export default function ProgramsPage() {
   };
 
   const handleDeleteProgram = async (id) => {
-    await deleteProgram({ variables: { id, userId } });
+    await deleteProgram({ variables: { id } });
     refetch();
   };
 
