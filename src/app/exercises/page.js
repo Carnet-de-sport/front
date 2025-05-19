@@ -12,10 +12,14 @@ import ItemListWithModal from "@/components/ItemListWithModal";
 import { useExercises } from "@/hooks/useExercises";
 import { getUserId } from "@/utils/auth";
 import { useRouter } from "next/navigation";
+import ShareItem from "@/components/ShareItem";
 
 export default function ExercisesPage() {
   const [userId, setUserId] = useState(null);
   const router = useRouter();
+
+  const [shareOpen, setShareOpen] = useState(false);
+  const [shareItemId, setShareItemId] = useState(null);
 
   const {
     exercises,
@@ -58,59 +62,77 @@ export default function ExercisesPage() {
   };
 
   return (
-    <Container sx={{ mt: 5 }}>
-      <ItemListWithModal
-        items={exercises}
-        title="Mes Exercices"
-        addLabel="Ajouter un exercice"
-        onAdd={handleAddExercise}
-        onDelete={handleDeleteExercise}
-        fields={[
-          { name: "name", label: "Nom" },
-          { name: "description", label: "Description" },
-          {
-            name: "muscles",
-            label: "Muscles ciblés",
-            type: "select",
-            options: muscleGroups,
-            multiple: true,
-          },
-          {
-            name: "type",
-            label: "Type d’exercice",
-            type: "select",
-            options: exerciseTypes,
-          },
-        ]}
-        renderItem={(exercise) => (
-          <Card>
-            <CardContent>
-              <Typography variant="h6">{exercise.name}</Typography>
-              <Typography variant="body2" color="text.secondary">
-                {exercise.description}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Muscles :{" "}
-                {Array.isArray(exercise.muscles)
-                  ? exercise.muscles.join(", ")
-                  : exercise.muscles}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                Type : {exercise.type}
-              </Typography>
-              <Button
-                variant="outlined"
-                color="error"
-                size="small"
-                sx={{ mt: 1 }}
-                onClick={() => handleDeleteExercise(exercise.id)}
-              >
-                Supprimer
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+    <>
+      <Container sx={{ mt: 5 }}>
+        <ItemListWithModal
+          items={exercises}
+          title="Mes Exercices"
+          addLabel="Ajouter un exercice"
+          onAdd={handleAddExercise}
+          onDelete={handleDeleteExercise}
+          fields={[
+            { name: "name", label: "Nom" },
+            { name: "description", label: "Description" },
+            {
+              name: "muscles",
+              label: "Muscles ciblés",
+              type: "select",
+              options: muscleGroups,
+              multiple: true,
+            },
+            {
+              name: "type",
+              label: "Type d’exercice",
+              type: "select",
+              options: exerciseTypes,
+            },
+          ]}
+          renderItem={(exercise) => (
+            <Card>
+              <CardContent>
+                <Typography variant="h6">{exercise.name}</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {exercise.description}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Muscles :{" "}
+                  {Array.isArray(exercise.muscles)
+                    ? exercise.muscles.join(", ")
+                    : exercise.muscles}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Type : {exercise.type}
+                </Typography>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={() => {
+                    setShareOpen(true);
+                    setShareItemId(exercise.id);
+                  }}
+                >
+                  Partager
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  size="small"
+                  sx={{ mt: 1 }}
+                  onClick={() => handleDeleteExercise(exercise.id)}
+                >
+                  Supprimer
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        />
+      </Container>
+      <ShareItem
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        itemId={shareItemId}
+        type="program"
       />
-    </Container>
+    </>
   );
 }
