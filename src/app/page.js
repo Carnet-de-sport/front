@@ -20,7 +20,7 @@ export default function Home() {
           fontWeight={700}
           gutterBottom
         >
-          Carnet d'Entraînement
+          Carnet d&apos;Entraînement
         </Typography>
         <Typography align="center" color="text.secondary" sx={{ mb: 6 }}>
           Gérez vos séances de sport avec une interface moderne et sombre.

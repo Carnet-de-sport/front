@@ -34,7 +34,7 @@ export default function Navbar() {
     <AppBar position="static">
       <Toolbar>
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          Carnet d'Entraînement
+          Carnet d&apos;Entraînement
         </Typography>
         <Box>
           <Button color="inherit" component={Link} href="/">
