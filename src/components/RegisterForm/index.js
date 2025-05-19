@@ -124,7 +124,7 @@ export default function RegisterForm() {
               sx={{ mt: 2 }}
               disabled={loading}
             >
-              S'inscrire
+              S&apos;inscrire
             </Button>
           </Box>
           <Box mt={2} textAlign="center">
